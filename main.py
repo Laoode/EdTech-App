@@ -54,11 +54,11 @@ def get_labels_with_threshold(senti_list, senti_labels, threshold_percentage=0.1
     paired_list = list(zip(senti_list, senti_labels))
     paired_list.sort(reverse=True, key=lambda x: x[0])
 
-    # Kategorikan "Others" untuk nilai-nilai kecil
+    # Categorize “Others” for small values
     others_value = 0
     others_label = "Others"
     
-    # Daftar warna untuk setiap label
+    # List of colors for each label
     colors = [
         "#3673FF",  
         "#6236FF",  
@@ -68,7 +68,7 @@ def get_labels_with_threshold(senti_list, senti_labels, threshold_percentage=0.1
         "#C1BEFD", 
     ]
     
-    # Filter label yang lebih kecil dari threshold dan tidak bernilai 0
+    # Filter labels that are smaller than the threshold and not 0
     filtered_list = []
     small_labels = []
     color_index = 0
@@ -84,7 +84,7 @@ def get_labels_with_threshold(senti_list, senti_labels, threshold_percentage=0.1
             })
             color_index += 1
 
-    # Jika ada lebih dari satu label yang lebih kecil dari threshold, gabungkan ke dalam kategori "Others"
+    # If there is more than one label that is smaller than the threshold, merge them into the “Others” category.
     if len(small_labels) > 1:
         others_value = sum([v for v, _ in small_labels]) 
         filtered_list.append({
@@ -112,18 +112,18 @@ good = 0
 awesome = 0
 all_feedback_file = "feedback/all_feedback.json"
 def count_sentiments_from_file(file_path):
-    """Membaca file JSON dan menghitung jumlah setiap kategori sentiment."""
+    """Read the JSON file and count the number of each sentiment category."""
     try:
         with open(file_path, "r") as file:
             data = json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
-        # Jika file tidak ditemukan atau kosong, kembalikan nilai default
+        # If the file is not found or is empty, return the default value
         return {"awful": 0, "poor": 0, "neutral": 0, "good": 0, "awesome": 0}
 
-    # Inisialisasi jumlah sentiment
+    # Initialize the number of sentiments
     sentiment_count = {"awful": 0, "poor": 0, "neutral": 0, "good": 0, "awesome": 0}
 
-    # Hitung jumlah setiap sentiment
+    # Count the number of each sentiment
     for feedback in data.get("feedback", []):
         sentiment = feedback.get("sentiment", "").lower()
         if sentiment in sentiment_count:
@@ -132,7 +132,7 @@ def count_sentiments_from_file(file_path):
     return sentiment_count
 
 def initialize_sentiment_counts():
-    """Mengupdate variabel global dengan jumlah sentiment dari file JSON."""
+    """Updates the global variable with the number of sentiments from the JSON file."""
     global awful, poor, neutral, good, awesome
     sentiment_count = count_sentiments_from_file(all_feedback_file)
     
@@ -142,7 +142,7 @@ def initialize_sentiment_counts():
     good = sentiment_count["good"]
     awesome = sentiment_count["awesome"]
 
-# Panggil fungsi untuk inisialisasi
+# Call function for initialization
 initialize_sentiment_counts()
 
 def create_pie():
@@ -152,14 +152,14 @@ def create_pie():
     sentiment = get_labels_with_threshold(sentiments, labels, threshold_percentage=0.1)
     return sentiment
 
-# Fungsi untuk memperbarui Pie Chart dan Legend
+# Function to update Pie Chart and Legend
 def update_pie_chart():
     global chart, legends_container
     
     sentiment = create_pie() 
     total_value = sum([sent["values"][0] for sent in sentiment])
 
-    # Update sections pada pie chart
+    # Update sections on the pie chart
     chart.sections = [
         PieChartSection(
             value=sent["values"][0],
@@ -179,7 +179,7 @@ def update_pie_chart():
     legends_container.update()
 
 sentiment = create_pie()
-total_value = sum([sent["values"][0] for sent in sentiment])  # Total nilai untuk menghitung persentase
+total_value = sum([sent["values"][0] for sent in sentiment])  # Total score to calculate percentage
 
 sections = [
     PieChartSection(
@@ -199,7 +199,7 @@ def create_legend_items(sentiments):
     
     total_labels = len(sentiments)
 
-    # Jika ada kurang dari 5 label, tampilkan semua di baris pertama
+    # If there are less than 5 labels, display all on the first row
     if total_labels < 5:
         row_items = [
             Row(
@@ -230,7 +230,7 @@ def create_legend_items(sentiments):
             ),
         ]
     
-    # Jika ada 5 atau lebih label, pisahkan menjadi dua baris
+    # If there are 5 or more labels, split them into two lines
     if total_labels >= 5:
         first_row_items = [
             Row(
@@ -273,7 +273,7 @@ def create_legend_items(sentiments):
             for sent in sentiments[3:] 
         ]
 
-        # Kembalikan dua baris sebagai list
+        # Return two rows as a list
         return [
             Row(
                 controls=first_row_items,
@@ -287,7 +287,7 @@ def create_legend_items(sentiments):
             ),
         ]
         
-# Membuat grid untuk legenda
+# Creating a grid for legends
 legend_rows = create_legend_items(sentiment)
 
 legends_container = Container(
@@ -300,7 +300,7 @@ legends_container = Container(
 )
 
 
-# Fungsi untuk menangani event hover pada pie chart
+# Function to handle hover events on pie charts
 def on_chart_event(e: PieChartEvent):
     normal_radius = 40
     hover_radius = 50
@@ -323,7 +323,7 @@ def on_chart_event(e: PieChartEvent):
             section.title_style = normal_title_style
     chart.update()
     
-# Membuat PieChart
+# Create pie charts
 chart = PieChart(
     sections=sections,
     sections_space=5,  
@@ -332,14 +332,14 @@ chart = PieChart(
     expand=True,
 )
 
-# Kontainer untuk menampilkan hasil
+# Container to display results
 ct_result = Container(
     content=Column(
         scroll="auto"
     ),
     padding = padding.only(10, 12, 12, 12),
     border_radius=10,
-    width=320, 
+    width=370, 
     shadow=BoxShadow(
         spread_radius=0,            
         blur_radius=2,             
@@ -353,11 +353,11 @@ ct_result = Container(
     )
 )
 
-# Kontainer pembungkus
+# Wrapping container of ct_result
 ct_wrapper = Container(
     content=ct_result,
     padding = padding.only(20, 5, 20, 0),
-    width=360,
+    width=390,
 )
 
 def display_result(page: Page, response_text: str):
@@ -369,7 +369,7 @@ def display_result(page: Page, response_text: str):
         controls=[
             Column(
                 controls=[
-                    Image(src="assets/icons/gemini.gif", width=20, height=20),  
+                    Image(src="icons/gemini.gif", width=20, height=20),  
                 ],
                 alignment="start",  
                 spacing=10, 
@@ -405,10 +405,10 @@ loading_animation = Container(
         [
             Container(
                 Image(
-                    src='assets/animation/loading-resize.gif',
+                    src='animation/loading-resize.gif',
                 ),
                 alignment=alignment.center,
-                padding=padding.only(top=200),
+                padding=padding.only(top=230),
             ),
             Container(
                 Text(
@@ -426,8 +426,8 @@ loading_animation = Container(
         horizontal_alignment="center",
     ),
     bgcolor=Colors.with_opacity(0.4, "#000000"),
-    width=360,
-    height=640,
+    width=390,
+    height=670,
     visible=False,
     alignment=alignment.center, 
     padding=padding.all(0),  
@@ -439,7 +439,7 @@ positive_file = "feedback/positive_feedback.json"
 negative_file = "feedback/negative_feedback.json"
 all_feedback_file = "feedback/all_feedback.json"
 
-# Fungsi untuk menambahkan feedback ke file JSON
+# Function to add feedback to JSON file
 def add_feedback_to_file(file_path, feedback_entry):
     with open(file_path, "r") as file:
         data = json.load(file)
@@ -450,17 +450,17 @@ def add_feedback_to_file(file_path, feedback_entry):
         json.dump(data, file, indent=4)
         
 
-# Fungsi untuk submit feedback dan memproses sentiment
+# Functions for submitting feedback and processing sentiments
 def submit_feedback(e, page):
     close_sentiment(e)
     global awful, poor, neutral, good, awesome
     
-    # Nonaktifkan elemen utama (body)
+    # Disable the main element (body)
     body.scroll = None
     body.update()
 
     
-    # Tampilkan animasi loading
+    # Show loading animation
     loading_animation.visible = True
     loading_animation.update()
     
@@ -477,7 +477,7 @@ def submit_feedback(e, page):
     sentiment = predict_sentiment(feedback_text) 
     print(f"Predicted sentiment: {sentiment}")
 
-    # Update nilai variabel berdasarkan hasil prediksi
+    # Update variable values based on prediction results
     if sentiment == "Awful":
         awful += 1
     elif sentiment == "Poor":
@@ -489,7 +489,7 @@ def submit_feedback(e, page):
     elif sentiment == "Awesome":
         awesome += 1
 
-    # Buat entri feedback baru
+    # Create a new feedback entry
     feedback_entry = {
         "id": math.ceil(time.time()),
         "text": feedback_text,
@@ -523,79 +523,85 @@ feedback_input = TextField(
     color="black",
 )
 
+bs = None
+
 def bs_dismissed(e):
     print("Dismissed!")
 
 def show_bs(e):
+    global bs
     bs.open = True
     bs.update()
-
+    
 def close_bs(e):
+    global bs
     bs.open = False
     feedback_input.value = ""
     feedback_input.update()
     bs.update()
 
 def close_sentiment(e):
+    global bs
     bs.open = False
     bs.update()
     
-
-bs = BottomSheet(
-    Container(
-        Column(
-            [
-                Row(
-                    alignment=MainAxisAlignment.SPACE_BETWEEN,
-                    controls=[
-                        Text(
-                            value="What can we improve?",
-                            size=20,
-                            weight="bold",
-                            color="black",
-                        ),
-                        IconButton(
-                            icon=Icons.CLOSE,
-                            icon_size=20,
-                            on_click=close_bs,
-                        )
-                    ],
-                ),
-                Text(
-                    value="We value your feedback about this class! Share your thoughts so we can enhance the learning experience.",
-                    size=16,
-                    color="#52525B",
-                    text_align=TextAlign.LEFT,
-                ),
-                feedback_input,
-                # Bungkus ElevatedButton dalam Container
-                Container(
-                    ElevatedButton(
-                        text="Submit",
-                        bgcolor="#6366F1",
-                        width=300,
-                        color="white",
-                        on_click=lambda e: submit_feedback(e,page),
+def create_bottom_sheet(page: Page):
+    return BottomSheet(
+        Container(
+            Column(
+                [
+                    Row(
+                        alignment=MainAxisAlignment.SPACE_BETWEEN,
+                        controls=[
+                            Text(
+                                value="What can we improve?",
+                                size=20,
+                                weight="bold",
+                                color="black",
+                            ),
+                            IconButton(
+                                icon=Icons.CLOSE,
+                                icon_size=20,
+                                on_click=close_bs,
+                            )
+                        ],
                     ),
-                    alignment=alignment.center,
-                ),
-            ],
-            tight=True,
+                    Text(
+                        value="We value your feedback about this class! Share your thoughts so we can enhance the learning experience.",
+                        size=16,
+                        color="#52525B",
+                        text_align=TextAlign.LEFT,
+                    ),
+                    feedback_input,
+                    Container(
+                        ElevatedButton(
+                            text="Submit",
+                            bgcolor="#6366F1",
+                            width=330,
+                            color="white",
+                            on_click=lambda e: submit_feedback(e, page),
+                        ),
+                        alignment=alignment.center,
+                        margin=margin.only(top=38),
+                    ),
+                ],
+                tight=True,
+            ),
+            padding=padding.only(15, 15, 15, 30),
+            bgcolor="white",
+            border_radius=border_radius.only(top_left=20, top_right=20, bottom_left=0, bottom_right=0),
+            expand=True,
+            height=402,
         ),
-        padding=padding.only(15, 15, 15, 30),
-        bgcolor="white",
-        border_radius=border_radius.only(top_left=20, top_right=20, bottom_left=0, bottom_right=0),
-        expand=True,
-    ),
-    on_dismiss=bs_dismissed,
-)
+        on_dismiss=bs_dismissed,
+    )
 
 body = Container(
     Column([
         MenuDetail(),
         Container(
             Image(
-                src  = 'assets/sql_course.png',
+                src  = 'images/sql_course.png',
             ),
             alignment=alignment.center,
         ),
@@ -650,7 +656,7 @@ body = Container(
             padding=padding.only(20, -1, 10, 0)
         ),
         Container(chart,
-                  padding=padding.only(0, -50, 0, 0),
+                  padding=padding.only(0, -40, 0, 0),
                   ),
         legends_container,
         Container(
@@ -685,7 +691,7 @@ body = Container(
             ),
             padding = 10,
             bgcolor="#DDE7FF",
-            margin=padding.only(left=20, right=20, top=10, bottom=60),
+            margin=padding.only(left=20, right=20, top=10, bottom=30),
             border_radius=5,
             alignment=alignment.center,
         ),
@@ -699,30 +705,35 @@ body = Container(
         end = alignment.bottom_right,
         colors = ['#6366F1','white','white']
     ),
-    width = 360,
-    height = 640,
+    width = 390,
+    height = 670,
     alignment=alignment.center,
 )
 
 main_body = Stack(
     [
-        body,  # Elemen utama dari page
-        loading_animation,  # Animasi loading akan muncul di atas elemen lainnya
+        body,  
+        loading_animation,
     ]
 )
 
 def manage(page:Page):
-    page.window.max_width = 360
-    page.window.width = 360
-    page.window.max_height = 640
-    page.window.height = 640
+    global bs
+    
+    page.window.max_width = 390
+    page.window.width = 390
+    page.window.max_height = 670
+    page.window.height = 670
     
     page.padding = 0
     page.font = {
-        "font_name":"assets/fonts/PlusJakartaSans.ttf"
+        "font_name":"fonts/PlusJakartaSans.ttf"
     }
     page.theme = Theme(font_family = "font_name")
+    
+    bs = create_bottom_sheet(page)
     page.overlay.append(bs)
+    
     page.add(
         main_body 
     )
@@ -730,4 +741,4 @@ def manage(page:Page):
     initial_response_text = generate_chatbot_response()
     display_result(page, initial_response_text)
 
-flet.app(manage)
+flet.app(manage, view=AppView.WEB_BROWSER, assets_dir="assets",port=5555,)
