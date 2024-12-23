@@ -1,5 +1,10 @@
-# EdTech
-Connecting students and lecturers across Indonesia through a P2P (peer-to-peer) education platform.
+<h1 align="center">EdTech — Connecting students and lecturers across Indonesia through a P2P (peer-to-peer) education platform.</h1>
+
+<div align="center">
+  <img src="https://github.com/Laoode/EdTech-App/blob/main/Banner/banner-iphone.gif" alt="banner">
+</div>
+
+
 
 ## Features
 
@@ -23,3 +28,10 @@ AI-powered tools to help lecturers improve based on student feedback.
 <div align="center">
   <video src="https://github.com/user-attachments/assets/a5510647-15e7-49ce-a892-c4f4ccaff2c1" controls width="300"></video>
 </div>
+
+## Related Repositories
+
+| Repository Name                | Description                                                                                  | Tech Stack          |
+|--------------------------------|----------------------------------------------------------------------------------------------|---------------------|
+| [SentiFeedback](https://github.com/Laoode/SentiFeedback)      | Real-time sentiment analysis for improving lecturer performance through actionable feedback. | 🟠 Jupyter Notebook |
+| [AI-Improve-Lecturer](https://github.com/Laoode/AI-Improve-Lecturer) | AI-powered analyzer providing insights and recommendations to lecturers for enhancing teaching strategies. | 🔵  Python |
